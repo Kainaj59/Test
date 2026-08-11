@@ -45,6 +45,7 @@ export const agents: Agent[] = [
     successRate: 91,
     hoursSaved: 9,
     accent: "#22c55e",
+    demoHref: "/dashboard/agents/sofia",
   },
   {
     id: "max",

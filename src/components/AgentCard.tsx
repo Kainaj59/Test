@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Share2, MessageCircle, Mail, Smartphone } from "lucide-react";
+import Link from "next/link";
+import { Phone, Share2, MessageCircle, Mail, Smartphone, Sparkles } from "lucide-react";
 import type { Agent } from "@/lib/types";
 import { Badge } from "./Badge";
 
@@ -70,6 +71,16 @@ export function AgentCard({ agent }: { agent: Agent }) {
           />
         </span>
       </button>
+
+      {agent.demoHref && (
+        <Link
+          href={agent.demoHref}
+          className="brand-gradient mt-2 flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand/25 transition-transform hover:-translate-y-0.5"
+        >
+          <Sparkles size={16} />
+          Tester en direct
+        </Link>
+      )}
     </div>
   );
 }

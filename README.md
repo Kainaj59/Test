@@ -12,7 +12,32 @@ trient les emails et prennent des rendez-vous, 24/7.
 - **TypeScript**
 - **Tailwind CSS v4**
 - **lucide-react** pour les icônes
+- **@anthropic-ai/sdk** — l'agent Sofia est réellement branché à l'API Claude
 - Graphiques SVG maison (aucune dépendance de charting)
+
+## Agent IA fonctionnel — Sofia (qualification de leads)
+
+Sofia n'est pas une maquette : c'est un **vrai agent IA branché à l'API Claude**.
+Ouvre **Agents IA → Sofia → « Tester en direct »** (`/dashboard/agents/sofia`) et
+discute avec elle comme un prospect. Elle mène la conversation, puis **score et
+qualifie le lead automatiquement** (sortie structurée via *tool use*) dans le
+panneau de droite.
+
+- Endpoint : `src/app/api/qualify/route.ts` (Route Handler, modèle `claude-opus-5`)
+- Prompt & schéma de qualification : `src/lib/sofia.ts`
+- Interface de chat : `src/app/dashboard/agents/sofia/page.tsx`
+
+### Configuration de la clé API
+
+Sofia a besoin d'une clé API Claude au runtime :
+
+```bash
+cp .env.example .env.local
+# puis renseigne ANTHROPIC_API_KEY dans .env.local
+```
+
+Sans clé, l'interface fonctionne toujours mais Sofia affiche un message
+invitant à configurer `ANTHROPIC_API_KEY` (aucun crash).
 
 ## Pages
 

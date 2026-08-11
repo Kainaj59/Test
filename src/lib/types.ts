@@ -11,6 +11,7 @@ export type Agent = {
   successRate: number; // 0-100
   hoursSaved: number; // per week
   accent: string; // css color var name
+  demoHref?: string; // lien vers une démo fonctionnelle de l'agent
 };
 
 export type LeadStatus = "nouveau" | "qualifié" | "en discussion" | "gagné" | "perdu";
