@@ -1,8 +1,10 @@
-import { Download, Filter } from "lucide-react";
+import { Download, Filter, Sparkles } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { Badge } from "@/components/Badge";
-import { leads } from "@/lib/data";
+import { getLeads } from "@/lib/store";
 import type { LeadStatus } from "@/lib/types";
+
+export const dynamic = "force-dynamic";
 
 const statusTone: Record<LeadStatus, string> = {
   nouveau: "brand",
@@ -18,7 +20,8 @@ function scoreColor(score: number) {
   return "var(--danger)";
 }
 
-export default function LeadsPage() {
+export default async function LeadsPage() {
+  const leads = await getLeads();
   const pipeline = leads
     .filter((l) => l.status !== "perdu")
     .reduce((s, l) => s + l.value, 0);
@@ -60,7 +63,14 @@ export default function LeadsPage() {
                 {leads.map((lead) => (
                   <tr key={lead.id} className="transition-colors hover:bg-surface-2">
                     <td className="px-5 py-4">
-                      <p className="font-medium">{lead.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{lead.name}</p>
+                        {lead.source === "Agent Sofia" && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-brand-soft px-1.5 py-0.5 text-[10px] font-semibold text-brand">
+                            <Sparkles size={10} /> IA
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-muted">{lead.company}</p>
                     </td>
                     <td className="px-5 py-4 text-muted">{lead.source}</td>

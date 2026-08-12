@@ -39,6 +39,19 @@ cp .env.example .env.local
 Sans clé, l'interface fonctionne toujours mais Sofia affiche un message
 invitant à configurer `ANTHROPIC_API_KEY` (aucun crash).
 
+### La boucle est fermée : chat → lead persistant → page Leads
+
+Quand Sofia qualifie un prospect, le lead est **enregistré** puis **remonte
+automatiquement dans la page Leads** (badge « IA », source « Agent Sofia »,
+score et pipeline mis à jour).
+
+- Couche de données : `src/lib/store.ts` (interface `getLeads()` / `addLead()`)
+- Persistance actuelle : fichier JSON local `.data/leads.json` — fonctionne en
+  `npm run dev` et sur un hébergement Node persistant. Sur un runtime serverless
+  au disque éphémère, l'écriture retombe sur un cache mémoire.
+- **Passer à une vraie base** (Supabase/Postgres) = réimplémenter les deux
+  fonctions de `store.ts`, rien d'autre à changer dans l'app.
+
 ## Pages
 
 | Route | Description |

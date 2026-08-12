@@ -6,6 +6,7 @@ import {
   type ChatMessage,
   type Qualification,
 } from "@/lib/sofia";
+import { addLead, qualificationToLead } from "@/lib/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -69,9 +70,12 @@ export async function POST(request: Request) {
       }
     }
 
-    // Si Sofia a enregistré la qualification, on lui renvoie le résultat de
+    // Si Sofia a enregistré la qualification, on persiste le lead (il
+    // remontera dans la page Leads) puis on lui renvoie le résultat de
     // l'outil pour qu'elle formule un message de clôture naturel.
     if (qualification && toolUseId) {
+      await addLead(qualificationToLead(qualification));
+
       const followUp = await client.messages.create({
         ...baseParams,
         messages: [
