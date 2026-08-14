@@ -2,26 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  Bot,
-  Users,
-  MessagesSquare,
-  Plug,
-  Settings,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
+import { LogOut, Sparkles } from "lucide-react";
 import { Logo } from "./Logo";
-
-const nav = [
-  { href: "/dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
-  { href: "/dashboard/agents", label: "Agents IA", icon: Bot },
-  { href: "/dashboard/leads", label: "Leads", icon: Users },
-  { href: "/dashboard/conversations", label: "Conversations", icon: MessagesSquare },
-  { href: "/dashboard/integrations", label: "Intégrations", icon: Plug },
-  { href: "/dashboard/settings", label: "Réglages", icon: Settings },
-];
+import { navItems as nav, isActive } from "./nav-items";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -36,10 +19,7 @@ export function Sidebar() {
 
       <nav className="mt-6 flex-1 space-y-1">
         {nav.map(({ href, label, icon: Icon }) => {
-          const active =
-            href === "/dashboard"
-              ? pathname === href
-              : pathname.startsWith(href);
+          const active = isActive(pathname, href);
           return (
             <Link
               key={href}

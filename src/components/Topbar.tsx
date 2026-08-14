@@ -1,4 +1,5 @@
 import { Search, Bell } from "lucide-react";
+import { MobileNav } from "./MobileNav";
 
 export function Topbar({
   title,
@@ -9,6 +10,8 @@ export function Topbar({
 }) {
   return (
     <header className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background/80 px-5 py-4 backdrop-blur lg:px-8">
+      <MobileNav />
+
       <div className="min-w-0">
         <h1 className="truncate text-lg font-semibold tracking-tight lg:text-xl">
           {title}
