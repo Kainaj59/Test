@@ -60,6 +60,7 @@ export const agents: Agent[] = [
     successRate: 87,
     hoursSaved: 7,
     accent: "#f59e0b",
+    demoHref: "/dashboard/agents/max",
   },
   {
     id: "ava",

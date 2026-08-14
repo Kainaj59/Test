@@ -54,6 +54,18 @@ prêt à publier**, streamé token par token, dans un aperçu façon réseau soc
 
 Même clé `ANTHROPIC_API_KEY` que Sofia.
 
+## Agent IA fonctionnel — Max (assistant email)
+
+Troisième agent réel : **Agents IA → Max → « Tester en direct »**
+(`/dashboard/agents/max`). Colle un email reçu (ou un contexte), précise
+l'objectif, le **ton** et la **longueur**, et Max **rédige une réponse prête à
+envoyer** (objet + corps), streamée en direct, avec bouton copier. Rédaction
+assistée uniquement — pas d'envoi ni d'OAuth.
+
+- Endpoint : `src/app/api/draft-email/route.ts` (NDJSON streamé, `claude-opus-5`)
+- Prompt & options : `src/lib/max.ts`
+- Studio : `src/app/dashboard/agents/max/page.tsx`
+
 ### La boucle est fermée : chat → lead persistant → page Leads
 
 Quand Sofia qualifie un prospect, le lead est **enregistré** puis **remonte
