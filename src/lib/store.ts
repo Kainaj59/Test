@@ -16,6 +16,7 @@ import type { Qualification } from "./sofia";
 const DATA_DIR = path.join(process.cwd(), ".data");
 const DATA_FILE = path.join(DATA_DIR, "leads.json");
 const CONTENT_FILE = path.join(DATA_DIR, "content.json");
+const SETTINGS_FILE = path.join(DATA_DIR, "settings.json");
 
 // Cache mémoire de secours si le disque n'est pas inscriptible.
 let memoryLeads: Lead[] | null = null;
@@ -121,4 +122,49 @@ export async function addContent(
     memoryContent = next;
   }
   return full;
+}
+
+// --- Réglages ------------------------------------------------------------
+
+export type Settings = {
+  fullName: string;
+  email: string;
+  company: string;
+  phone: string;
+  autoTransfer: boolean;
+  validateBeforePublish: boolean;
+  dailySummary: boolean;
+};
+
+export const DEFAULT_SETTINGS: Settings = {
+  fullName: "Matt Janiak",
+  email: "matt@studionexora.fr",
+  company: "Studio Nexora",
+  phone: "+33 6 12 34 56 78",
+  autoTransfer: true,
+  validateBeforePublish: false,
+  dailySummary: true,
+};
+
+let memorySettings: Settings | null = null;
+
+export async function getSettings(): Promise<Settings> {
+  try {
+    const raw = await fs.readFile(SETTINGS_FILE, "utf8");
+    return { ...DEFAULT_SETTINGS, ...(JSON.parse(raw) as Partial<Settings>) };
+  } catch {
+    return memorySettings ?? DEFAULT_SETTINGS;
+  }
+}
+
+export async function saveSettings(patch: Partial<Settings>): Promise<Settings> {
+  const current = await getSettings();
+  const next: Settings = { ...current, ...patch };
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    await fs.writeFile(SETTINGS_FILE, JSON.stringify(next, null, 2), "utf8");
+  } catch {
+    memorySettings = next;
+  }
+  return next;
 }
