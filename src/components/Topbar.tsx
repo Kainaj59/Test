@@ -1,5 +1,6 @@
-import { Search, Bell } from "lucide-react";
+import { Bell } from "lucide-react";
 import { MobileNav } from "./MobileNav";
+import { GlobalSearch } from "./GlobalSearch";
 
 export function Topbar({
   title,
@@ -19,12 +20,8 @@ export function Topbar({
         {subtitle && <p className="truncate text-sm text-muted">{subtitle}</p>}
       </div>
 
-      <div className="ml-auto hidden items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-muted md:flex">
-        <Search size={16} />
-        <input
-          placeholder="Rechercher un lead, une conversation…"
-          className="w-56 bg-transparent outline-none placeholder:text-muted"
-        />
+      <div className="ml-auto">
+        <GlobalSearch />
       </div>
 
       <button className="relative grid h-10 w-10 place-items-center rounded-xl border border-border bg-surface text-muted hover:text-foreground">
