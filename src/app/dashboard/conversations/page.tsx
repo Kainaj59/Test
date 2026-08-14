@@ -1,8 +1,11 @@
 import { Phone, Share2, MessageCircle, Mail, Smartphone } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { Badge } from "@/components/Badge";
-import { conversations } from "@/lib/data";
+import { conversations as mockConversations } from "@/lib/data";
+import { getLeads } from "@/lib/store";
 import type { Conversation } from "@/lib/types";
+
+export const dynamic = "force-dynamic";
 
 const channelIcon = {
   Téléphone: Phone,
@@ -18,7 +21,24 @@ const sentimentTone: Record<Conversation["sentiment"], string> = {
   négatif: "danger",
 };
 
-export default function ConversationsPage() {
+export default async function ConversationsPage() {
+  // Les prospects qualifiés par Sofia (chat) remontent comme conversations.
+  const leads = await getLeads();
+  const sofiaConversations: Conversation[] = leads
+    .filter((l) => l.source === "Agent Sofia")
+    .slice(0, 4)
+    .map((l) => ({
+      id: `conv-${l.id}`,
+      contact: l.name,
+      channel: "Chat",
+      agent: "Sofia",
+      preview: `Lead ${l.status} · score ${l.score} · ${l.company}. Transmis au commercial.`,
+      unread: true,
+      time: l.lastActivity,
+      sentiment: l.score >= 70 ? "positif" : "neutre",
+    }));
+
+  const conversations = [...sofiaConversations, ...mockConversations];
   const unread = conversations.filter((c) => c.unread).length;
 
   return (
