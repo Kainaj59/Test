@@ -40,6 +40,20 @@ cp .env.example .env.local
 Sans clé, l'interface fonctionne toujours mais Sofia affiche un message
 invitant à configurer `ANTHROPIC_API_KEY` (aucun crash).
 
+## Agent IA fonctionnel — Nora (contenu réseaux sociaux)
+
+Deuxième agent réel : **Agents IA → Nora → « Tester en direct »**
+(`/dashboard/agents/nora`). Décris un sujet, choisis la **plateforme**
+(LinkedIn / Instagram / TikTok) et le **ton**, et Nora **rédige un post
+prêt à publier**, streamé token par token, dans un aperçu façon réseau social
+(hashtags mis en valeur, bouton copier, régénérer).
+
+- Endpoint : `src/app/api/generate-post/route.ts` (NDJSON streamé, `claude-opus-5`)
+- Prompt & options : `src/lib/nora.ts`
+- Studio : `src/app/dashboard/agents/nora/page.tsx`
+
+Même clé `ANTHROPIC_API_KEY` que Sofia.
+
 ### La boucle est fermée : chat → lead persistant → page Leads
 
 Quand Sofia qualifie un prospect, le lead est **enregistré** puis **remonte

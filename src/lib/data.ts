@@ -32,6 +32,7 @@ export const agents: Agent[] = [
     successRate: 89,
     hoursSaved: 12,
     accent: "var(--brand-2)",
+    demoHref: "/dashboard/agents/nora",
   },
   {
     id: "sofia",
