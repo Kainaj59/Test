@@ -1,4 +1,4 @@
-import { Clock, Users, Phone, MessageSquare } from "lucide-react";
+import { Clock, Users, Wallet, Phone } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { StatCard } from "@/components/StatCard";
 import { AreaChart, Donut } from "@/components/charts";
@@ -10,8 +10,34 @@ import {
   activity,
   agents,
 } from "@/lib/data";
+import { getLeads } from "@/lib/store";
+import type { ActivityItem } from "@/lib/types";
 
-export default function OverviewPage() {
+export const dynamic = "force-dynamic";
+
+export default async function OverviewPage() {
+  // Métriques live pilotées par le store (cohérentes avec la page Leads).
+  const leads = await getLeads();
+  const qualifiedCount = leads.filter(
+    (l) => l.status === "qualifié" || l.status === "gagné",
+  ).length;
+  const pipeline = leads
+    .filter((l) => l.status !== "perdu")
+    .reduce((s, l) => s + l.value, 0);
+
+  // Les leads qualifiés par Sofia (chat) alimentent le flux d'activité.
+  const sofiaActivity: ActivityItem[] = leads
+    .filter((l) => l.source === "Agent Sofia")
+    .slice(0, 3)
+    .map((l) => ({
+      id: l.id,
+      agent: "Sofia",
+      action: "a qualifié un lead",
+      detail: `${l.name} · score ${l.score}`,
+      time: l.lastActivity,
+    }));
+  const feed = [...sofiaActivity, ...activity].slice(0, 6);
+
   return (
     <>
       <Topbar
@@ -23,9 +49,9 @@ export default function OverviewPage() {
         {/* KPIs */}
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard icon={Clock} label="Heures économisées / sem." value={`${kpis.hoursSaved} h`} delta="+12%" />
-          <StatCard icon={Users} label="Leads qualifiés" value={`${kpis.leadsQualified}`} delta="+8%" />
+          <StatCard icon={Users} label="Leads qualifiés" value={`${qualifiedCount}`} />
+          <StatCard icon={Wallet} label="Pipeline" value={`${pipeline.toLocaleString("fr-FR")} €`} />
           <StatCard icon={Phone} label="Appels traités" value={`${kpis.callsHandled}`} delta="+21%" />
-          <StatCard icon={MessageSquare} label="Messages gérés" value={kpis.messagesHandled.toLocaleString("fr-FR")} delta="+5%" />
         </div>
 
         {/* Charts */}
@@ -59,7 +85,7 @@ export default function OverviewPage() {
           <div className="card p-5 lg:col-span-2">
             <p className="font-semibold">Activité récente</p>
             <ul className="mt-4 divide-y divide-border">
-              {activity.map((a) => (
+              {feed.map((a) => (
                 <li key={a.id} className="flex items-center gap-3 py-3">
                   <span className="brand-gradient grid h-9 w-9 shrink-0 place-items-center rounded-full text-xs font-semibold text-white">
                     {a.agent.slice(0, 2)}

@@ -53,6 +53,11 @@ score et pipeline mis à jour).
 - **Passer à une vraie base** (Supabase/Postgres) = réimplémenter les deux
   fonctions de `store.ts`, rien d'autre à changer dans l'app.
 
+La **Vue d'ensemble** est également alimentée par le store : le compteur
+« Leads qualifiés », le « Pipeline » et le flux d'activité reflètent en direct
+les leads (dont ceux qualifiés par Sofia). Les autres métriques (appels, heures
+économisées, graphiques) restent des données de démo.
+
 ## Pages
 
 | Route | Description |
