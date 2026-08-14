@@ -98,10 +98,12 @@ les leads (dont ceux qualifiés par Sofia). Les autres métriques (appels, heure
 
 | Route | Description |
 | --- | --- |
-| `/` | Écran de connexion (démo — cliquez sur « Se connecter ») |
-| `/dashboard` | Vue d'ensemble : KPIs, courbe d'activité, répartition par canal, flux d'activité |
-| `/dashboard/agents` | Gestion des agents IA (activer / mettre en pause) |
-| `/dashboard/leads` | Table des leads avec scoring et pipeline |
+| `/` | **Site vitrine** : hero, agents, fonctionnement, intégrations, tarifs, CTA |
+| `/login` | Écran de connexion (démo — cliquez sur « Se connecter ») |
+| `/dashboard` | Vue d'ensemble : KPIs (leads/pipeline live), graphiques, activité |
+| `/dashboard/agents` | Agents IA + « Tester en direct » (Sofia, Nora, Max) |
+| `/dashboard/leads` | Table des leads : scoring, filtres, export CSV |
+| `/dashboard/content` | Bibliothèque des contenus générés (posts, emails) |
 | `/dashboard/conversations` | Boîte de réception unifiée multi-canal |
 | `/dashboard/integrations` | Connexion des outils (HubSpot, Gmail, Google Calendar…) |
 | `/dashboard/settings` | Profil, préférences des agents, abonnement |
