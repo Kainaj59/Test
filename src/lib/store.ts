@@ -15,6 +15,7 @@ import type { Qualification } from "./sofia";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
 const DATA_FILE = path.join(DATA_DIR, "leads.json");
+const CONTENT_FILE = path.join(DATA_DIR, "content.json");
 
 // Cache mémoire de secours si le disque n'est pas inscriptible.
 let memoryLeads: Lead[] | null = null;
@@ -79,4 +80,45 @@ export function qualificationToLead(q: Qualification): Lead {
     agent: "Sofia",
     lastActivity: "à l'instant",
   };
+}
+
+// --- Contenus générés (posts Nora, emails Max) ---------------------------
+
+export type ContentItem = {
+  id: string;
+  agent: "Nora" | "Max";
+  kind: "post" | "email";
+  label: string; // ex : « Instagram · Fun » ou « Réponse · Amical · Court »
+  body: string;
+  createdAt: string; // ISO
+};
+
+let memoryContent: ContentItem[] | null = null;
+const MAX_CONTENT = 100;
+
+export async function getContent(): Promise<ContentItem[]> {
+  try {
+    const raw = await fs.readFile(CONTENT_FILE, "utf8");
+    return JSON.parse(raw) as ContentItem[];
+  } catch {
+    return memoryContent ?? [];
+  }
+}
+
+export async function addContent(
+  item: Omit<ContentItem, "id" | "createdAt">,
+): Promise<ContentItem> {
+  const full: ContentItem = {
+    ...item,
+    id: `${item.agent.toLowerCase()}-${Date.now()}`,
+    createdAt: new Date().toISOString(),
+  };
+  const next = [full, ...(await getContent())].slice(0, MAX_CONTENT);
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    await fs.writeFile(CONTENT_FILE, JSON.stringify(next, null, 2), "utf8");
+  } catch {
+    memoryContent = next;
+  }
+  return full;
 }

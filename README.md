@@ -66,6 +66,16 @@ assistée uniquement — pas d'envoi ni d'OAuth.
 - Prompt & options : `src/lib/max.ts`
 - Studio : `src/app/dashboard/agents/max/page.tsx`
 
+## Bibliothèque de contenus
+
+Les posts (Nora) et emails (Max) peuvent être **enregistrés** (bouton
+« Enregistrer » dans chaque studio) et retrouvés dans **Contenus**
+(`/dashboard/content`), filtrables par agent, avec copie en un clic.
+
+- Persistance : `getContent()` / `addContent()` dans `src/lib/store.ts`
+  (fichier `.data/content.json`, même modèle que les leads)
+- Endpoint : `src/app/api/content/route.ts`
+
 ### La boucle est fermée : chat → lead persistant → page Leads
 
 Quand Sofia qualifie un prospect, le lead est **enregistré** puis **remonte

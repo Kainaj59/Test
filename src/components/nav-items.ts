@@ -3,6 +3,7 @@ import {
   Bot,
   Users,
   MessagesSquare,
+  FileText,
   Plug,
   Settings,
   type LucideIcon,
@@ -15,6 +16,7 @@ export const navItems: NavItem[] = [
   { href: "/dashboard/agents", label: "Agents IA", icon: Bot },
   { href: "/dashboard/leads", label: "Leads", icon: Users },
   { href: "/dashboard/conversations", label: "Conversations", icon: MessagesSquare },
+  { href: "/dashboard/content", label: "Contenus", icon: FileText },
   { href: "/dashboard/integrations", label: "Intégrations", icon: Plug },
   { href: "/dashboard/settings", label: "Réglages", icon: Settings },
 ];

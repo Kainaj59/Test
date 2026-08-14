@@ -12,6 +12,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
+import { SaveContentButton } from "@/components/SaveContentButton";
 import { TONES, LENGTHS, type Tone, type Length } from "@/lib/max";
 
 const SAMPLE = `Bonjour,
@@ -196,13 +197,21 @@ export default function MaxStudioPage() {
             <div className="mb-3 flex items-center justify-between">
               <p className="font-semibold">Brouillon</p>
               {draft && !loading && (
-                <button
-                  onClick={copy}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-muted hover:text-foreground"
-                >
-                  {copied ? <Check size={13} /> : <Copy size={13} />}
-                  {copied ? "Copié" : "Copier"}
-                </button>
+                <div className="flex items-center gap-2">
+                  <SaveContentButton
+                    agent="Max"
+                    kind="email"
+                    label={`Réponse · ${tone} · ${length}`}
+                    body={draft}
+                  />
+                  <button
+                    onClick={copy}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-muted hover:text-foreground"
+                  >
+                    {copied ? <Check size={13} /> : <Copy size={13} />}
+                    {copied ? "Copié" : "Copier"}
+                  </button>
+                </div>
               )}
             </div>
 

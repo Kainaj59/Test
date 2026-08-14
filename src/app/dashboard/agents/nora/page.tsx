@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
+import { SaveContentButton } from "@/components/SaveContentButton";
 import { PLATFORMS, TONES, type Platform, type Tone } from "@/lib/nora";
 
 const platformMeta: Record<
@@ -213,13 +214,21 @@ export default function NoraStudioPage() {
             <div className="mb-3 flex items-center justify-between">
               <p className="font-semibold">Aperçu</p>
               {post && !loading && (
-                <button
-                  onClick={copy}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-muted hover:text-foreground"
-                >
-                  {copied ? <Check size={13} /> : <Copy size={13} />}
-                  {copied ? "Copié" : "Copier"}
-                </button>
+                <div className="flex items-center gap-2">
+                  <SaveContentButton
+                    agent="Nora"
+                    kind="post"
+                    label={`${platform} · ${tone}`}
+                    body={post}
+                  />
+                  <button
+                    onClick={copy}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-muted hover:text-foreground"
+                  >
+                    {copied ? <Check size={13} /> : <Copy size={13} />}
+                    {copied ? "Copié" : "Copier"}
+                  </button>
+                </div>
               )}
             </div>
 
