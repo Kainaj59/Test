@@ -1,6 +1,6 @@
 export function Logo({ size = 28 }: { size?: number }) {
   return (
-    <span className="flex items-center gap-2.5 font-semibold tracking-tight">
+    <span className="flex items-center gap-2.5 whitespace-nowrap font-semibold tracking-tight">
       <span
         className="brand-gradient grid place-items-center rounded-xl text-white shadow-lg shadow-brand/25"
         style={{ width: size, height: size }}

@@ -95,23 +95,25 @@ export default function LandingPage() {
     <div className="min-h-screen">
       {/* Barre de navigation */}
       <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-4">
-          <Logo />
+        <div className="mx-auto flex max-w-6xl items-center gap-3 px-5 py-4">
+          <div className="shrink-0">
+            <Logo />
+          </div>
           <nav className="ml-6 hidden items-center gap-6 text-sm text-muted md:flex">
             <a href="#agents" className="hover:text-foreground">Agents</a>
             <a href="#fonctionnement" className="hover:text-foreground">Fonctionnement</a>
             <a href="#tarifs" className="hover:text-foreground">Tarifs</a>
           </nav>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
             <Link
               href="/login"
-              className="rounded-xl px-4 py-2 text-sm font-medium text-muted hover:text-foreground"
+              className="whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium text-muted hover:text-foreground sm:px-4"
             >
               Connexion
             </Link>
             <Link
               href="/dashboard"
-              className="brand-gradient rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand/25"
+              className="brand-gradient whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold text-white shadow-lg shadow-brand/25 sm:px-4"
             >
               Essai gratuit
             </Link>
