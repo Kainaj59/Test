@@ -1,4 +1,5 @@
-import { Download, Filter, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { Download, Sparkles } from "lucide-react";
 import { Topbar } from "@/components/Topbar";
 import { Badge } from "@/components/Badge";
 import { getLeads } from "@/lib/store";
@@ -14,35 +15,71 @@ const statusTone: Record<LeadStatus, string> = {
   perdu: "danger",
 };
 
+const FILTERS: { label: string; value: string }[] = [
+  { label: "Tous", value: "" },
+  { label: "Nouveau", value: "nouveau" },
+  { label: "Qualifié", value: "qualifié" },
+  { label: "En discussion", value: "en discussion" },
+  { label: "Gagné", value: "gagné" },
+  { label: "Perdu", value: "perdu" },
+];
+
 function scoreColor(score: number) {
   if (score >= 80) return "var(--success)";
   if (score >= 60) return "var(--warning)";
   return "var(--danger)";
 }
 
-export default async function LeadsPage() {
-  const leads = await getLeads();
+export default async function LeadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const { status } = await searchParams;
+  const active = FILTERS.some((f) => f.value === status && f.value) ? status! : "";
+
+  const all = await getLeads();
+  const leads = active ? all.filter((l) => l.status === active) : all;
   const pipeline = leads
     .filter((l) => l.status !== "perdu")
     .reduce((s, l) => s + l.value, 0);
+
+  const exportHref = active
+    ? `/api/leads/export?status=${encodeURIComponent(active)}`
+    : "/api/leads/export";
 
   return (
     <>
       <Topbar
         title="Leads"
-        subtitle={`${leads.length} contacts · ${pipeline.toLocaleString("fr-FR")} € de pipeline`}
+        subtitle={`${leads.length} contact${leads.length > 1 ? "s" : ""} · ${pipeline.toLocaleString("fr-FR")} € de pipeline`}
       />
 
       <div className="space-y-6 p-5 lg:p-8">
-        <div className="flex items-center justify-end gap-2">
-          <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-muted hover:text-foreground">
-            <Filter size={16} />
-            Filtrer
-          </button>
-          <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-muted hover:text-foreground">
+        <div className="flex flex-wrap items-center gap-2">
+          {FILTERS.map((f) => {
+            const on = f.value === active;
+            return (
+              <Link
+                key={f.label}
+                href={f.value ? `/dashboard/leads?status=${encodeURIComponent(f.value)}` : "/dashboard/leads"}
+                className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
+                  on
+                    ? "border-brand bg-brand-soft text-brand"
+                    : "border-border bg-surface text-muted hover:text-foreground"
+                }`}
+              >
+                {f.label}
+              </Link>
+            );
+          })}
+          <a
+            href={exportHref}
+            className="ml-auto inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-muted hover:text-foreground"
+          >
             <Download size={16} />
-            Exporter
-          </button>
+            Exporter CSV
+          </a>
         </div>
 
         <div className="card overflow-hidden">
@@ -60,6 +97,13 @@ export default async function LeadsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
+                {leads.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="px-5 py-12 text-center text-sm text-muted">
+                      Aucun lead pour ce filtre.
+                    </td>
+                  </tr>
+                )}
                 {leads.map((lead) => (
                   <tr key={lead.id} className="transition-colors hover:bg-surface-2">
                     <td className="px-5 py-4">
