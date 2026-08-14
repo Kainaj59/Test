@@ -11,16 +11,15 @@ import { addLead, qualificationToLead } from "@/lib/store";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function POST(request: Request) {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return Response.json({
-      needsKey: true,
-      reply:
-        "Je suis prête à discuter, mais la clé API Claude n'est pas encore configurée sur ce serveur. Ajoute la variable d'environnement ANTHROPIC_API_KEY puis relance — je pourrai alors qualifier le lead pour de vrai.",
-      qualification: null,
-    });
-  }
+// Protocole de réponse : NDJSON streamé.
+//   {"type":"text","value":"…"}                    — fragment de texte de Sofia
+//   {"type":"meta","qualification":{…}|null,...}   — métadonnées finales
+const enc = new TextEncoder();
+function line(obj: unknown) {
+  return enc.encode(JSON.stringify(obj) + "\n");
+}
 
+export async function POST(request: Request) {
   let body: { messages?: ChatMessage[] };
   try {
     body = await request.json();
@@ -40,9 +39,33 @@ export async function POST(request: Request) {
     );
   }
 
+  const streamHeaders = {
+    "Content-Type": "application/x-ndjson; charset=utf-8",
+    "Cache-Control": "no-store",
+  };
+
+  // Pas de clé API : on renvoie tout de même un flux (message + meta) pour que
+  // le client garde un chemin unique, sans planter.
+  if (!process.env.ANTHROPIC_API_KEY) {
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          line({
+            type: "text",
+            value:
+              "Je suis prête à discuter, mais la clé API Claude n'est pas encore configurée sur ce serveur. Ajoute la variable d'environnement ANTHROPIC_API_KEY puis relance — je pourrai alors qualifier le lead pour de vrai.",
+          }),
+        );
+        controller.enqueue(line({ type: "meta", qualification: null, needsKey: true }));
+        controller.close();
+      },
+    });
+    return new Response(stream, { headers: streamHeaders });
+  }
+
   const client = new Anthropic();
 
-  // Sofia garde le contexte : historique + la sortie structurée via tool use.
+  // Sofia garde le contexte : historique + sortie structurée via tool use.
   const baseParams = {
     model: SOFIA_MODEL,
     max_tokens: 1024,
@@ -51,72 +74,70 @@ export async function POST(request: Request) {
     output_config: { effort: "low" },
   };
 
-  try {
-    const response = await client.messages.create({
-      ...baseParams,
-      messages: history,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (obj: unknown) => controller.enqueue(line(obj));
+      try {
+        // Premier tour : Sofia pose une question (texte streamé) ou décide de
+        // qualifier (bloc tool_use, sans texte visible).
+        const s1 = client.messages.stream({
+          ...baseParams,
+          messages: history,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
+        s1.on("text", (delta: string) => send({ type: "text", value: delta }));
+        const msg1 = await s1.finalMessage();
 
-    let reply = "";
-    let qualification: Qualification | null = null;
-    let toolUseId: string | null = null;
+        let qualification: Qualification | null = null;
+        let toolUseId: string | null = null;
+        for (const block of msg1.content) {
+          if (block.type === "tool_use" && block.name === QUALIFICATION_TOOL.name) {
+            qualification = block.input as Qualification;
+            toolUseId = block.id;
+          }
+        }
 
-    for (const block of response.content) {
-      if (block.type === "text") reply += block.text;
-      if (block.type === "tool_use" && block.name === QUALIFICATION_TOOL.name) {
-        qualification = block.input as Qualification;
-        toolUseId = block.id;
-      }
-    }
+        // Qualification enregistrée → persiste le lead puis streame le message
+        // de clôture de Sofia (réponse à l'outil).
+        if (qualification && toolUseId) {
+          await addLead(qualificationToLead(qualification));
 
-    // Si Sofia a enregistré la qualification, on persiste le lead (il
-    // remontera dans la page Leads) puis on lui renvoie le résultat de
-    // l'outil pour qu'elle formule un message de clôture naturel.
-    if (qualification && toolUseId) {
-      await addLead(qualificationToLead(qualification));
-
-      const followUp = await client.messages.create({
-        ...baseParams,
-        messages: [
-          ...history,
-          { role: "assistant", content: response.content },
-          {
-            role: "user",
-            content: [
+          const s2 = client.messages.stream({
+            ...baseParams,
+            messages: [
+              ...history,
+              { role: "assistant", content: msg1.content },
               {
-                type: "tool_result",
-                tool_use_id: toolUseId,
-                content: "Lead enregistré dans le CRM. Remercie et propose la démo.",
+                role: "user",
+                content: [
+                  {
+                    type: "tool_result",
+                    tool_use_id: toolUseId,
+                    content: "Lead enregistré dans le CRM. Remercie et propose la démo.",
+                  },
+                ],
               },
             ],
-          },
-        ],
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any);
+          s2.on("text", (delta: string) => send({ type: "text", value: delta }));
+          await s2.finalMessage();
+        }
 
-      const closing = followUp.content
-        .filter((b) => b.type === "text")
-        .map((b) => (b as { text: string }).text)
-        .join("");
-      if (closing) reply = closing;
-    }
+        send({ type: "meta", qualification });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Erreur inconnue.";
+        send({
+          type: "text",
+          value:
+            "Désolée, un souci technique m'empêche de répondre à l'instant. Réessaie dans un moment.",
+        });
+        send({ type: "meta", qualification: null, error: message });
+      } finally {
+        controller.close();
+      }
+    },
+  });
 
-    if (!reply) {
-      reply = "Peux-tu m'en dire un peu plus sur ton besoin ?";
-    }
-
-    return Response.json({ reply, qualification });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Erreur inconnue.";
-    return Response.json(
-      {
-        reply:
-          "Désolée, un souci technique m'empêche de répondre à l'instant. Réessaie dans un moment.",
-        qualification: null,
-        error: message,
-      },
-      { status: 200 },
-    );
-  }
+  return new Response(stream, { headers: streamHeaders });
 }

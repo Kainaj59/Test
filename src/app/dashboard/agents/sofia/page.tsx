@@ -30,13 +30,14 @@ export default function SofiaChatPage() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pending, setPending] = useState(false);
   const [qualification, setQualification] = useState<Qualification | null>(null);
   const [needsKey, setNeedsKey] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, loading]);
+  }, [messages, pending]);
 
   async function send(text: string) {
     const trimmed = text.trim();
@@ -46,6 +47,7 @@ export default function SofiaChatPage() {
     setMessages(next);
     setInput("");
     setLoading(true);
+    setPending(true);
 
     // On envoie la conversation à partir du premier message visiteur.
     const firstUser = next.findIndex((m) => m.role === "user");
@@ -57,19 +59,76 @@ export default function SofiaChatPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: payload }),
       });
-      const data = await res.json();
-      if (data.needsKey) setNeedsKey(true);
-      if (data.qualification) setQualification(data.qualification);
-      setMessages((m) => [
-        ...m,
-        { role: "assistant", content: data.reply ?? "…" },
-      ]);
+
+      if (!res.ok || !res.body) {
+        throw new Error("stream indisponible");
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let streamed = "";
+      let assistantAdded = false;
+
+      const pushDelta = (delta: string) => {
+        streamed += delta;
+        setPending(false);
+        const firstChunk = !assistantAdded;
+        assistantAdded = true; // synchrone : lisible par le repli après la boucle
+        setMessages((m) => {
+          const copy = [...m];
+          if (firstChunk) {
+            copy.push({ role: "assistant", content: streamed });
+          } else {
+            copy[copy.length - 1] = { role: "assistant", content: streamed };
+          }
+          return copy;
+        });
+      };
+
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let nl: number;
+        while ((nl = buffer.indexOf("\n")) >= 0) {
+          const raw = buffer.slice(0, nl).trim();
+          buffer = buffer.slice(nl + 1);
+          if (!raw) continue;
+          let obj: {
+            type: string;
+            value?: string;
+            qualification?: Qualification | null;
+            needsKey?: boolean;
+          };
+          try {
+            obj = JSON.parse(raw);
+          } catch {
+            continue;
+          }
+          if (obj.type === "text" && obj.value) {
+            pushDelta(obj.value);
+          } else if (obj.type === "meta") {
+            if (obj.needsKey) setNeedsKey(true);
+            if (obj.qualification) setQualification(obj.qualification);
+          }
+        }
+      }
+
+      if (!assistantAdded) {
+        setMessages((m) => [
+          ...m,
+          { role: "assistant", content: "Peux-tu m'en dire un peu plus ?" },
+        ]);
+      }
     } catch {
       setMessages((m) => [
         ...m,
         { role: "assistant", content: "Oups, je n'ai pas pu répondre. Réessaie." },
       ]);
     } finally {
+      setPending(false);
       setLoading(false);
     }
   }
@@ -129,7 +188,7 @@ export default function SofiaChatPage() {
                   </div>
                 </div>
               ))}
-              {loading && (
+              {pending && (
                 <div className="flex justify-start">
                   <div className="flex gap-1 rounded-2xl bg-surface-2 px-4 py-3">
                     <Dot /> <Dot delay="0.15s" /> <Dot delay="0.3s" />

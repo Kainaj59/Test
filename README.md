@@ -24,6 +24,7 @@ qualifie le lead automatiquement** (sortie structurée via *tool use*) dans le
 panneau de droite.
 
 - Endpoint : `src/app/api/qualify/route.ts` (Route Handler, modèle `claude-opus-5`)
+  — réponses **streamées en NDJSON** (Sofia « tape » token par token)
 - Prompt & schéma de qualification : `src/lib/sofia.ts`
 - Interface de chat : `src/app/dashboard/agents/sofia/page.tsx`
 
