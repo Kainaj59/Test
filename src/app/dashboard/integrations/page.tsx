@@ -3,6 +3,8 @@ import { Badge } from "@/components/Badge";
 import { integrations } from "@/lib/data";
 import { Check } from "lucide-react";
 
+export const metadata = { title: "Intégrations" };
+
 export default function IntegrationsPage() {
   const connected = integrations.filter((i) => i.connected).length;
 

@@ -1,5 +1,13 @@
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
 import { Sidebar } from "@/components/Sidebar";
+
+export const metadata: Metadata = {
+  title: {
+    template: "%s · Nexora AI",
+    default: "Tableau de bord · Nexora AI",
+  },
+};
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (

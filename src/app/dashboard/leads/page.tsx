@@ -6,6 +6,7 @@ import { getLeads } from "@/lib/store";
 import type { LeadStatus } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Leads" };
 
 const statusTone: Record<LeadStatus, string> = {
   nouveau: "brand",

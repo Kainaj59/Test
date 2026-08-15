@@ -3,6 +3,8 @@ import { Topbar } from "@/components/Topbar";
 import { AgentCard } from "@/components/AgentCard";
 import { agents } from "@/lib/data";
 
+export const metadata = { title: "Agents IA" };
+
 export default function AgentsPage() {
   const active = agents.filter((a) => a.status === "active").length;
 

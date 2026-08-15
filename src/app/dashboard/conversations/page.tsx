@@ -6,6 +6,7 @@ import { getLeads } from "@/lib/store";
 import type { Conversation } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Conversations" };
 
 const channelIcon = {
   Téléphone: Phone,

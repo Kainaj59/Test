@@ -4,6 +4,7 @@ import { SettingsForm } from "@/components/SettingsForm";
 import { getSettings } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Réglages" };
 
 export default async function SettingsPage() {
   const settings = await getSettings();

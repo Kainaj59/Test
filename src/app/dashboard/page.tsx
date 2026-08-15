@@ -14,6 +14,7 @@ import { getLeads } from "@/lib/store";
 import type { ActivityItem } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Vue d'ensemble · Nexora AI" };
 
 export default async function OverviewPage() {
   // Métriques live pilotées par le store (cohérentes avec la page Leads).
