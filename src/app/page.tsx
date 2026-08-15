@@ -103,6 +103,7 @@ export default function LandingPage() {
             <a href="#agents" className="hover:text-foreground">Agents</a>
             <a href="#fonctionnement" className="hover:text-foreground">Fonctionnement</a>
             <a href="#tarifs" className="hover:text-foreground">Tarifs</a>
+            <a href="#faq" className="hover:text-foreground">FAQ</a>
           </nav>
           <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
             <Link
@@ -291,6 +292,54 @@ export default function LandingPage() {
               </Link>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="border-t border-border bg-surface/40">
+        <div className="mx-auto max-w-3xl px-5 py-20">
+          <div className="text-center">
+            <h2 className="text-3xl font-semibold tracking-tight lg:text-4xl">
+              Questions fréquentes
+            </h2>
+          </div>
+          <div className="mt-10 space-y-3">
+            {[
+              {
+                q: "Combien de temps pour être opérationnel ?",
+                a: "Moins de 10 minutes : vous connectez vos outils, activez les agents dont vous avez besoin et définissez vos règles. Aucune compétence technique requise.",
+              },
+              {
+                q: "Puis-je essayer gratuitement ?",
+                a: "Oui. L'essai est gratuit et sans carte bancaire. Vous ne payez que si vous décidez de continuer.",
+              },
+              {
+                q: "Mes données sont-elles en sécurité ?",
+                a: "Vos données restent les vôtres. Les échanges sont chiffrés et vous gardez le contrôle des accès de chaque agent à tout moment.",
+              },
+              {
+                q: "Avec quels outils Nexora s'intègre-t-il ?",
+                a: "HubSpot, Gmail, Google Calendar, Instagram, LinkedIn, Slack et d'autres. De nouvelles intégrations sont ajoutées régulièrement.",
+              },
+              {
+                q: "Puis-je garder la main sur ce que font les agents ?",
+                a: "Bien sûr. Chaque agent peut demander votre validation avant d'agir (par exemple avant de publier un post), et vous suivez toute leur activité depuis le tableau de bord.",
+              },
+            ].map(({ q, a }) => (
+              <details
+                key={q}
+                className="card group px-5 py-4 [&_summary::-webkit-details-marker]:hidden"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium">
+                  {q}
+                  <span className="text-muted transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 text-sm text-muted">{a}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
