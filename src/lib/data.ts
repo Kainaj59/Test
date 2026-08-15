@@ -10,15 +10,16 @@ export const agents: Agent[] = [
   {
     id: "tom",
     name: "Léo",
-    role: "Agent téléphonique",
+    role: "Analyse d'appels & réunions",
     description:
-      "Répond, qualifie et transfère vos appels entrants 24/7, puis relaie les messages importants à votre équipe.",
+      "Analyse tes appels et visios (Zoom, Meet, Teams) : résumé, points clés, actions à faire et prochaines étapes, à partir du transcript.",
     status: "active",
     channel: "Téléphone",
     tasksDone: 1284,
     successRate: 94,
     hoursSaved: 18,
     accent: "var(--brand)",
+    demoHref: "/dashboard/agents/leo",
   },
   {
     id: "john",

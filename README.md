@@ -66,6 +66,18 @@ assistée uniquement — pas d'envoi ni d'OAuth.
 - Prompt & options : `src/lib/max.ts`
 - Studio : `src/app/dashboard/agents/max/page.tsx`
 
+## Agent IA fonctionnel — Léo (analyse d'appels & réunions)
+
+Quatrième agent réel : **Agents IA → Léo → « Tester en direct »**
+(`/dashboard/agents/leo`). Colle le **transcript** d'un appel ou d'une visio
+(Zoom, Google Meet, Teams — texte ou sous-titres VTT) et Léo produit une
+**analyse structurée** : résumé, participants, points clés, actions (avec
+responsable), sentiment et prochaines étapes. Aucune téléphonie requise.
+
+- Endpoint : `src/app/api/analyze-call/route.ts` (sortie structurée via *tool use*, `claude-opus-5`)
+- Prompt & schéma : `src/lib/analyst.ts`
+- Studio : `src/app/dashboard/agents/leo/page.tsx`
+
 ## Bibliothèque de contenus
 
 Les posts (Nora) et emails (Max) peuvent être **enregistrés** (bouton
