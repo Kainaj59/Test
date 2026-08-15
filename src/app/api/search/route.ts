@@ -1,17 +1,11 @@
 import { getLeads, getContent } from "@/lib/store";
+import { normalizeText as norm } from "@/lib/text";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function norm(s: string) {
-  return s
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase();
-}
-
 export async function GET(request: Request) {
-  const q = norm((new URL(request.url).searchParams.get("q") ?? "").trim());
+  const q = norm(new URL(request.url).searchParams.get("q") ?? "");
   if (q.length < 2) {
     return Response.json({ leads: [], content: [] });
   }

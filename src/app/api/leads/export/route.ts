@@ -1,4 +1,5 @@
 import { getLeads } from "@/lib/store";
+import { csvCell as cell } from "@/lib/text";
 import type { LeadStatus } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -11,12 +12,6 @@ const STATUSES: LeadStatus[] = [
   "gagné",
   "perdu",
 ];
-
-// Échappe une cellule CSV (séparateur « ; », compatible Excel FR).
-function cell(v: string | number) {
-  const s = String(v ?? "");
-  return /[";\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-}
 
 export async function GET(request: Request) {
   const status = new URL(request.url).searchParams.get("status");

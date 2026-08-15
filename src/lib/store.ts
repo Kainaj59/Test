@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { leads as seedLeads } from "./data";
+import { parseBudget } from "./text";
 import type { Lead } from "./types";
 import type { Qualification } from "./sofia";
 
@@ -58,13 +59,6 @@ export async function addLead(lead: Lead): Promise<Lead> {
   const persisted = await writeFile(next);
   if (!persisted) memoryLeads = next;
   return lead;
-}
-
-// Estime une valeur (€) à partir d'un budget en texte libre.
-function parseBudget(budget: string): number {
-  const digits = budget.replace(/[^\d]/g, "");
-  const n = parseInt(digits, 10);
-  return Number.isFinite(n) ? n : 0;
 }
 
 // Transforme une qualification produite par Sofia en lead persistable.
