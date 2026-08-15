@@ -113,6 +113,7 @@ les leads (dont ceux qualifiés par Sofia). Les autres métriques (appels, heure
 ```bash
 npm install
 npm run dev      # http://localhost:3000
+cp .env.example .env.local   # puis renseigne ANTHROPIC_API_KEY pour activer les agents
 ```
 
 Build de production :
@@ -122,35 +123,57 @@ npm run build
 npm start
 ```
 
-## Architecture & prochaines étapes
+Tests :
 
-Les données sont pour l'instant **mockées** dans `src/lib/data.ts` (typées dans
-`src/lib/types.ts`), afin que l'UI soit immédiatement démontrable. Pour aller vers un
-produit réel :
+```bash
+npm test         # lanceur intégré de Node (aucune dépendance de test)
+```
 
-1. **Backend / base de données** — remplacer les mocks par une API (ex. Supabase/Postgres)
-   et charger les données via des Server Components.
-2. **Authentification** — remplacer la connexion démo par un vrai flux (NextAuth, Clerk…).
-3. **Agents IA réels** — brancher un LLM (API Claude) pour la qualification de leads,
-   la rédaction de réponses et la génération de contenu.
-4. **Intégrations** — implémenter les OAuth (HubSpot, Google, Meta…) derrière les boutons « Connecter ».
-5. **Temps réel** — websockets pour le flux d'activité et les conversations.
+## État réel du projet
+
+Ce qui est **réellement fonctionnel** :
+
+- **3 agents IA branchés à l'API Claude** (Sofia, Nora, Max), réponses **streamées**.
+- **Persistance locale** via `src/lib/store.ts` (fichiers `.data/*.json`) : leads,
+  contenus et réglages. Durable en local / hébergement Node ; sur serverless
+  (disque éphémère) l'écriture retombe sur un cache mémoire.
+- **Boucle de données cohérente** : un lead qualifié par Sofia remonte dans
+  Leads, la Vue d'ensemble (compteur, pipeline, activité) et Conversations.
+- **Filtres + export CSV** des leads, **bibliothèque de contenus**, **recherche
+  globale**, **réglages persistés**, **site vitrine**, **navigation mobile** et
+  **sidebar repliable**.
+
+Ce qui reste **de la démo** (données de `src/lib/data.ts`) : agents Léo (téléphone)
+et Ava (RDV), métriques plateforme (heures/appels/graphiques), page Intégrations.
+
+### Prochaines étapes (nécessitent des services externes)
+
+1. **Base de données** (Supabase/Postgres) — réimplémenter `store.ts`, rien
+   d'autre à changer dans l'app.
+2. **Authentification réelle** (NextAuth/Clerk) à la place de la connexion démo.
+3. **Léo / Ava** — téléphonie (Twilio) et agenda (OAuth Google).
+4. **Envoi réel** (emails via Gmail, publication réseaux via Meta/LinkedIn).
 
 ## Structure
 
 ```
 src/
 ├── app/
-│   ├── layout.tsx            # layout racine (thème sombre, fonts, metadata)
-│   ├── page.tsx              # connexion
-│   └── dashboard/            # app authentifiée
-│       ├── layout.tsx        # sidebar + contenu
-│       ├── page.tsx          # vue d'ensemble
-│       ├── agents/
-│       ├── leads/
-│       ├── conversations/
-│       ├── integrations/
-│       └── settings/
-├── components/               # Logo, Sidebar, Topbar, StatCard, AgentCard, charts, Badge
-└── lib/                      # types + données mock
+│   ├── layout.tsx              # layout racine (thème sombre, fonts, metadata)
+│   ├── page.tsx                # site vitrine (landing + tarifs + FAQ)
+│   ├── login/                  # connexion (démo)
+│   ├── not-found.tsx           # 404 stylée
+│   ├── api/                    # qualify, generate-post, draft-email, content,
+│   │                           # leads/export, search, settings
+│   └── dashboard/              # app
+│       ├── layout.tsx          # sidebar + contenu
+│       ├── loading.tsx         # squelette de chargement
+│       ├── page.tsx            # vue d'ensemble (live)
+│       ├── agents/             # + studios sofia / nora / max
+│       ├── leads/  content/  conversations/  integrations/  settings/
+├── components/                 # Logo, Sidebar, MobileNav, Topbar, GlobalSearch,
+│                               # StatCard, AgentCard, charts, Badge, Save/CopyButton…
+└── lib/                        # store, sofia, nora, max, text (testé), data, types
+
+tests/                          # tests unitaires (node --test) — hors src/
 ```
