@@ -1,4 +1,10 @@
-export function Logo({ size = 28 }: { size?: number }) {
+export function Logo({
+  size = 28,
+  compact = false,
+}: {
+  size?: number;
+  compact?: boolean;
+}) {
   return (
     <span className="flex items-center gap-2.5 whitespace-nowrap font-semibold tracking-tight">
       <span
@@ -19,9 +25,11 @@ export function Logo({ size = 28 }: { size?: number }) {
           <path d="M4 20V6l8 8 8-8v14" />
         </svg>
       </span>
-      <span className="text-lg">
-        Nexora<span className="brand-text"> AI</span>
-      </span>
+      {!compact && (
+        <span className="text-lg">
+          Nexora<span className="brand-text"> AI</span>
+        </span>
+      )}
     </span>
   );
 }
