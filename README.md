@@ -105,7 +105,9 @@ propres photos. Trois outils réellement fonctionnels dans le **studio**
 Le moteur (réglages, filtres, mouvement Ken Burns, chronologie du diaporama)
 est en fonctions pures dans `src/lib/photo.ts`, testé par `tests/photo.test.ts`.
 Le site vitrine du produit (`src/app/lumibnb/page.tsx`) présente l'offre et
-les tarifs ; le studio est `src/app/lumibnb/studio/page.tsx`.
+les tarifs **en paiement unique, par annonce** (pas d'abonnement : Découverte
+gratuit, Pack Photos 19 €, Pack Photos + Vidéo 29 €) ; le studio est
+`src/app/lumibnb/studio/page.tsx`.
 
 ## Bibliothèque de contenus
 

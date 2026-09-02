@@ -53,49 +53,53 @@ const PLANS = [
     name: "Découverte",
     price: "0 €",
     period: "",
-    tagline: "Pour tester sur votre annonce.",
+    tagline: "Pour voir la différence sur vos photos.",
     features: [
       "Retouche photo illimitée",
-      "3 analyses IA / mois",
-      "Vidéo en 720p",
-      "1 annonce",
+      "1 analyse IA offerte",
+      "Vidéo d'essai en 720p",
+      "Aucune carte bancaire",
     ],
     cta: "Essayer gratuitement",
     highlight: false,
   },
   {
-    name: "Hôte",
-    price: "14,90 €",
-    period: "/ mois",
-    tagline: "Pour remplir votre calendrier.",
+    name: "Pack Photos",
+    price: "19 €",
+    period: "une fois, par annonce",
+    tagline: "Toutes les photos d'une annonce, au top.",
     features: [
-      "Analyses IA illimitées",
+      "Analyse IA de toutes vos photos",
+      "Réglages appliqués en un clic",
       "Légendes d'annonce générées",
-      "Vidéos verticales & paysage",
-      "Jusqu'à 3 annonces",
-      "Support par email",
+      "Export HD sans filigrane",
+      "Valable à vie pour cette annonce",
     ],
-    cta: "Démarrer l'essai",
+    cta: "Améliorer mon annonce",
     highlight: true,
   },
   {
-    name: "Conciergerie",
-    price: "49 €",
-    period: "/ mois",
-    tagline: "Pour gérer un parc d'annonces.",
+    name: "Pack Photos + Vidéo",
+    price: "29 €",
+    period: "une fois, par annonce",
+    tagline: "L'annonce complète, prête à publier.",
     features: [
-      "Annonces illimitées",
-      "Traitement par lot",
-      "Marque blanche sur les vidéos",
-      "Accès multi-utilisateurs",
-      "Support prioritaire",
+      "Tout le Pack Photos",
+      "Vidéos 9:16, 16:9 et 1:1",
+      "Titre & carte de fin personnalisés",
+      "Idéale pour Reels, TikTok & Stories",
+      "Regénérez la vidéo à volonté",
     ],
-    cta: "Nous contacter",
+    cta: "Créer mon pack complet",
     highlight: false,
   },
 ];
 
 const FAQ = [
+  {
+    q: "Y a-t-il un abonnement ?",
+    a: "Non. Vous payez une fois, par annonce, et c'est tout : le pack reste valable à vie pour cette annonce (nouvelles photos comprises). Pas de carte enregistrée, pas de renouvellement caché.",
+  },
   {
     q: "Mes photos sont-elles envoyées sur vos serveurs ?",
     a: "La retouche et la génération de vidéo se font entièrement dans votre navigateur : vos photos ne quittent pas votre appareil. Seule l'analyse IA envoie un aperçu compressé de la photo, le temps de l'évaluer.",
@@ -253,9 +257,12 @@ export default function LumibnbLandingPage() {
 
       {/* Tarifs */}
       <section id="tarifs" className="mx-auto max-w-6xl px-5 py-20">
-        <h2 className="text-center text-3xl font-bold tracking-tight">Tarifs simples</h2>
+        <h2 className="text-center text-3xl font-bold tracking-tight">
+          Payez une fois. <span className="brand-text">Pas d&apos;abonnement.</span>
+        </h2>
         <p className="mx-auto mt-3 max-w-xl text-center text-sm text-muted">
-          Une nuitée gagnée rembourse l&apos;abonnement de l&apos;année.
+          Un pack par annonce, valable à vie — une seule nuitée gagnée le
+          rembourse plusieurs fois.
         </p>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {PLANS.map((plan) => (
@@ -274,7 +281,9 @@ export default function LumibnbLandingPage() {
               <p className="mt-1 text-xs text-muted">{plan.tagline}</p>
               <p className="mt-4">
                 <span className="text-3xl font-bold">{plan.price}</span>
-                <span className="text-sm text-muted">{plan.period}</span>
+                {plan.period && (
+                  <span className="mt-0.5 block text-xs text-muted">{plan.period}</span>
+                )}
               </p>
               <ul className="mt-5 flex-1 space-y-2.5 text-sm">
                 {plan.features.map((feat) => (
