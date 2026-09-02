@@ -78,6 +78,37 @@ responsable), sentiment et prochaines étapes. Aucune téléphonie requise.
 - Prompt & schéma : `src/lib/analyst.ts`
 - Studio : `src/app/dashboard/agents/leo/page.tsx`
 
+## Lumibnb — le lab « photos qui font réserver » (Airbnb)
+
+Deuxième produit du dépôt, autonome et accessible sur **`/lumibnb`** : Lumibnb
+aide les hôtes Airbnb/Booking à obtenir plus de réservations à partir de leurs
+propres photos. Trois outils réellement fonctionnels dans le **studio**
+(`/lumibnb/studio`) :
+
+- **Analyse IA** (Claude vision, `claude-opus-5`) : chaque photo est notée
+  comme le ferait un voyageur (score /100 + sous-notes lumière/cadrage/attrait),
+  avec conseils concrets sans matériel pro, **légende d'annonce suggérée** et
+  **réglages de retouche proposés** (applicables en un clic).
+  - Endpoint : `src/app/api/lumibnb/analyze/route.ts` (sortie structurée via
+    *tool use*, image envoyée en base64 après compression côté client)
+  - Prompt & schéma : `src/lib/lumibnb.ts` — même clé `ANTHROPIC_API_KEY`
+    que les agents Nexora (mode démo sans clé, aucun crash)
+- **Retouche** 100 % navigateur : presets calibrés intérieur (Lumineux,
+  Chaleureux, Éclatant…), curseurs (luminosité, contraste, saturation,
+  température), avant/après, export JPEG — les photos **ne quittent pas
+  l'appareil**.
+- **Vidéo à partir des photos** : diaporama animé (effet Ken Burns, fondus,
+  titre + carte de fin) rendu sur canvas et **enregistré en WebM dans le
+  navigateur** (MediaRecorder). Formats 9:16 (Reels/TikTok), 16:9 et 1:1 ;
+  les retouches sont reprises dans la vidéo.
+
+Le moteur (réglages, filtres, mouvement Ken Burns, chronologie du diaporama)
+est en fonctions pures dans `src/lib/photo.ts`, testé par `tests/photo.test.ts`.
+Le site vitrine du produit (`src/app/lumibnb/page.tsx`) présente l'offre et
+les tarifs **en paiement unique, par annonce** (pas d'abonnement : Découverte
+gratuit, Pack Photos 19 €, Pack Photos + Vidéo 29 €) ; le studio est
+`src/app/lumibnb/studio/page.tsx`.
+
 ## Bibliothèque de contenus
 
 Les posts (Nora) et emails (Max) peuvent être **enregistrés** (bouton
